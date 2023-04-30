@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "github.com/Mexican-Man/vite-plugin-purge-bootstrap-icons"
+    "url": "https://github.com/Mexican-Man/vite-plugin-purge-bootstrap-icons.git"
   },
   "author": "Cole Crouter",
   "license": "ISC",
