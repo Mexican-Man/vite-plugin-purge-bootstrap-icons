@@ -11,7 +11,7 @@ type PluginConfig = {
 // We put this outside of the plugin so it persists between builds
 // If two builds are ran (e.g. ssr and dom) then one build might not get the classes
 // This happens with SvelteKit, and creates inconsistent behaviour
-const classList = new Array<string>();
+let classList = new Array<string>();
 
 export default (config: PluginConfig = {}): Plugin => {
     return {
@@ -44,8 +44,12 @@ export default (config: PluginConfig = {}): Plugin => {
                 classList.push(...config.whitelist);
             }
 
+            // Firefox seems unable to read the first glyph, and I'm not sure why
+            // I'll just insert an empty glyph at the start to fix it
+            classList.unshift('');
+
             // Remove duplicates
-            classList.splice(0, classList.length, ...new Set(classList));
+            classList = [...new Set(classList)];
         },
 
         // After everything is done, us 'fs' to manually update the font and css files
@@ -93,16 +97,11 @@ export default (config: PluginConfig = {}): Plugin => {
                     throw e;
                 }
 
-                // Convert glyph names and ids into a map
-                const glyphMap = new Map<string, number>();
-                (font.tables.post.names as Array<string>).forEach((name, i) =>
-                    glyphMap.set(name, font.tables.post.glyphNameIndex[i]));
-
                 // Strip font
 
                 // Trim the POST table (contains glyph names and ids)
                 font.tables.post['names'] = classList;
-                font.tables.post['glyphNameIndex'] = classList.map((v, i) => i);
+                font.tables.post['glyphNameIndex'] = classList.map((i) => i);
                 font.tables.post['numberOfGlyphs'] = classList.length;
 
                 // Replace the glyph set (contains glyph data)
@@ -115,7 +114,6 @@ export default (config: PluginConfig = {}): Plugin => {
                     // Reassign the glyph index to the new index
                     // If we keep the old index, then opentype.js will break because of missing entries
                     foundGlyph.index = i;
-
                     newGlyphs.push(foundGlyph);
                 });
 
