@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-purge-bootstrap-icons",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Vite plugin to remove unused Bootstrap Icons from your bundle",
   "main": "dist/index.js",
   "type": "module",
